@@ -1,64 +1,44 @@
-import { NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TaskStatus } from './task-status.enum';
-import { TasksRepository } from './tasks.repository';
-import { TasksService } from './tasks.service';
+import { AssessmentStatus } from './assessment.model';
+import { AssessmentsService } from './assessments.service';
 
-const mockTasksRepository = () => ({
-  getTasks: jest.fn(),
-  findOne: jest.fn(),
+const mockAssessmentsServices = () => ({
+  getAllAssessments: jest.fn(),
+  getAssesssmentById: jest.fn(),
 });
 
-const mockUser = {
-  username: 'Ariel',
-  id: 'someId',
-  password: 'somePassword',
-  tasks: [],
-};
-
-describe('TasksService', () => {
-  let tasksService: TasksService;
-  let tasksRepository;
+describe('AssessmentsService', () => {
+  let assessmentsService: AssessmentsService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        TasksService,
-        { provide: TasksRepository, useFactory: mockTasksRepository },
+        AssessmentsService,
+        { provide: AssessmentsService, useFactory: mockAssessmentsServices },
       ],
     }).compile();
 
-    tasksService = module.get(TasksService);
-    tasksRepository = module.get(TasksRepository);
+    assessmentsService = module.get(AssessmentsService);
   });
 
-  describe('getTasks', () => {
-    it('calls TasksRepository.getTasks and returns the result', async () => {
-      tasksRepository.getTasks.mockResolvedValue('someValue');
-      const result = await tasksService.getTasks(null, mockUser);
-      expect(result).toEqual('someValue');
-    });
-  });
+  // describe('getAllAssessments', () => {
+  //   it('call AssessmentsService.getAllAssessments and return the results', () => {
+  //     const result = assessmentsService.getAllAssessments();
+  //     expect(result).toEqual('someValue');
+  //   });
+  // });
 
-  describe('getTaskById', () => {
-    it('calls TasksRepository.findOne and returns the result', async () => {
-      const mockTask = {
-        title: 'Test title',
-        description: 'Test desc',
+  describe('getAssessmentById', () => {
+    it('calls AssesssmentById and returns the result', () => {
+      const mockAssessment = {
+        subject: 'Test Assessment By Id',
+        learningOutcomes: 'Test desc',
         id: 'someId',
-        status: TaskStatus.OPEN,
+        status: AssessmentStatus.OPEN,
       };
 
-      tasksRepository.findOne.mockResolvedValue(mockTask);
-      const result = await tasksService.getTaskById('someId', mockUser);
-      expect(result).toEqual(mockTask);
-    });
-
-    it('calls TasksRepository.findOne and handles an error', async () => {
-      tasksRepository.findOne.mockResolvedValue(null);
-      expect(tasksService.getTaskById('someId', mockUser)).rejects.toThrow(
-        NotFoundException,
-      );
+      const result = assessmentsService.getAssesssmentById('someId');
+      expect('someId').toEqual(mockAssessment.id);
     });
   });
 });
